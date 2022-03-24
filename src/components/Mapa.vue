@@ -51,6 +51,8 @@ export default {
       },
       icon: icon({
         iconUrl: require('../assets/img/mapa/marker.png'),
+        iconSize: [24,36],
+        iconAnchor: [12,36]
       }),
     };
   },
@@ -67,6 +69,7 @@ export default {
     navigator.geolocation.getCurrentPosition(function(position) {
       that.center = [position.coords.latitude, position.coords.longitude];
       that.posicionPropia  = [position.coords.latitude, position.coords.longitude];
+      console.log(that.posicionPropia)
     });
   },
   methods: {
