@@ -1,7 +1,7 @@
 <template>
   <div class="chat">
     <div class="chat-top">
-      <p>
+      <p>Conversación con 
         {{
           $conversacionElegida != null
             ? $conversacionElegida.user_dest.name
@@ -213,7 +213,7 @@ export default {
     // this.$refs.chatScroll.addEventListener("touchmove", this.onScroll);
   },
   created() {
-    // this.$eventHub.$on("chat-get", id => this.onGetChat(id));
+    this.$eventHub.$on("chat-get", id => this.onGetChat(id));
   },
   methods: {
     esImagen(mensaje) {
@@ -270,10 +270,12 @@ export default {
       }
     },
     onGetChat(id) {
-      if (id != null) {
-        this.mostrarLoading = true;
-      }
-      this.getChat(id);
+      // if (id != null) {
+      //   this.mostrarLoading = true;
+      // }
+      // this.getChat(id);
+      console.log(id);
+      this.$forceUpdate();
     },
     getChat(id) {
       if (id == null) {

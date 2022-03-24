@@ -63,6 +63,7 @@ export default {
   },
   created() {
     this.$eventHub.$on("home-desconectar-socket", this.desconectarSocket());
+    this.$eventHub.$on("loged", () => this.reportarUbicacion());
   },
   mounted() {
     // this.getConversaciones();
@@ -97,6 +98,7 @@ export default {
       }
     ];
     this.conversacionesFiltradas = this.conversaciones;
+    this.reportarUbicacion();
   },
   beforeDestroy() {
     this.$eventHub.$off("home-desconectar-socket");
@@ -192,6 +194,24 @@ export default {
           // handle error
           console.log(error);
         });
+    },
+    reportarUbicacion(){
+      // let usuarioId = localStorage.getItem("$userId");
+      // if(usuarioId != null){
+      //   navigator.geolocation.getCurrentPosition(function(position) {
+      //     console.log("reporto ubicacion: " + position);
+      //     setTimeout(() => {
+      //       this.reportarUbicacion();
+      //     }, 3000);
+      //   });
+      // }
+      var that = this;
+      navigator.geolocation.getCurrentPosition(function(position) {
+        console.log("reporto ubicacion: " + position);
+        setTimeout(function(){
+          that.reportarUbicacion();
+        }, 3000);
+      });
     }
   }
 };
