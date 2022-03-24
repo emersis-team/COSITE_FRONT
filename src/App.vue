@@ -1,0 +1,58 @@
+<template>
+  <div id="app">
+    <Snackbar></Snackbar>
+    <router-view />
+  </div>
+</template>
+
+<script>
+import Vue from "vue";
+import Snackbar from "@/components/Snackbar.vue";
+
+export default {
+  data() {
+    return {
+      deferredPrompt: null
+    };
+  },
+  components: { Snackbar },
+  created() {
+    // Vue.prototype.$localurl = "https://emersis.casya.com.ar";
+    // Vue.prototype.$localurl = "http://chat-ea-web-sockets-back.casya.com.ar";
+    // Vue.prototype.$localurl = "http://127.0.0.1:8000";
+    // Vue.prototype.$localurl = "http://localhost/chat-ea-web-websockets-OAUTH-client-BACK/public";
+    Vue.prototype.$localurl = "http://23.237.173.86:8081/chat-ea-web-websockets-OAUTH-client-BACK/public";
+    // Vue.prototype.$localurl = "http://localhost/chat-ea-web-back/public";
+    
+    this.$axios.defaults.headers.common["Authorization"] =
+      "Bearer " + localStorage.getItem("$token");
+    // if (localStorage.getItem("$token") == null) {
+    //   this.$router.push("/login");
+    // }
+
+    window.addEventListener("beforeinstallprompt", e => {
+      e.preventDefault();
+      // Stash the event so it can be triggered later.
+      this.deferredPrompt = e;
+    });
+    window.addEventListener("appinstalled", () => {
+      this.deferredPrompt = null;
+    });
+  },
+  mounted() {},
+  methods: {
+    async dismiss() {
+      this.deferredPrompt = null;
+    },
+    async install() {
+      this.deferredPrompt.prompt();
+    }
+  }
+};
+</script>
+
+<style src="@/assets/css/fonts.css"></style>
+<style src="@/assets/css/transitions.css"></style>
+<style src="@/assets/css/app.css"></style>
+<style src="@/assets/css/error.css"></style>
+<style src="@/assets/css/components/loading.css"></style>
