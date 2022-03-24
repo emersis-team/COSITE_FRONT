@@ -26,11 +26,12 @@
         </div>
         <button class="home-logout" @click="logout()">Cerrar sesión</button>
       </div>
-      <div class="home-right">
+      <div class="home-right" :class="{ 'home-right-with-map': conversacionElegida != null }">
         <Chat
           v-if="conversacionElegida != null"
           :conversacion="conversacionElegida"
         ></Chat>
+        <Mapa :conversaciones="conversacionesFiltradas"></Mapa>
       </div>
     </div>
   </div>
@@ -41,6 +42,7 @@ import Conversacion from "@/components/Conversacion.vue";
 import Chat from "@/components/Chat.vue";
 import Vue from "vue";
 import Echo from "laravel-echo";
+import Mapa from "@/components/Mapa.vue";
 
 window.Pusher = require("pusher-js");
 
@@ -48,7 +50,8 @@ export default {
   name: "Home",
   components: {
     Conversacion,
-    Chat
+    Chat,
+    Mapa
   },
   data() {
     return {
@@ -66,10 +69,30 @@ export default {
     // this.conectarSocket();
     this.conversaciones = [
       {
+        id: 1,
         ammount_no_read: 1,
         user_dest: {
           name: "Javi",
-          email: "javi@email.com"
+          email: "javi@email.com",
+          posicion: [-34.5326425, -58.7070437]
+        }
+      },
+      {
+        id: 2,
+        ammount_no_read: 0,
+        user_dest: {
+          name: "Paul",
+          email: "paul@email.com",
+          posicion: [-34.5395425, -58.8031437]
+        }
+      },
+      {
+        id: 3,
+        ammount_no_read: 0,
+        user_dest: {
+          name: "Vale",
+          email: "vale@email.com",
+          posicion: [-34.5123425, -58.7123437]
         }
       }
     ];
@@ -138,11 +161,18 @@ export default {
       );
     },
     elegirConversacion(conversacion) {
-      conversacion.ammount_no_read = 0;
-      this.conversacionElegida = conversacion;
-      Vue.prototype.$conversacionElegida = conversacion;
-
-      this.$eventHub.$emit("chat-get", conversacion.id);
+      if(conversacion != this.conversacionElegida){
+        conversacion.ammount_no_read = 0;
+        this.conversacionElegida = conversacion;
+        Vue.prototype.$conversacionElegida = conversacion;
+  
+        this.$eventHub.$emit("chat-get", conversacion.id);
+        this.$eventHub.$emit("map-center", conversacion.user_dest.posicion);
+      }else{
+        Vue.prototype.$conversacionElegida = null;
+        this.conversacionElegida = null;
+        this.$eventHub.$emit("map-center-propia");
+      }
     },
     logout() {
       this.desconectarSocket();

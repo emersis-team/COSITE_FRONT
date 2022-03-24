@@ -7,17 +7,25 @@
       :options="mapOptions"
       @update:center="centerUpdate"
       @update:zoom="zoomUpdate"
+      ref="map"
     >
       <l-tile-layer
         :url="url"
         :attribution="attribution"
       />
       <l-marker :lat-lng="posicionPropia" :icon="icon">
-        <l-popup>
+        <l-tooltip :options="{ permanent: true, interactive: true }">
           <div>
-            I am a popup
+            Yo
           </div>
-        </l-popup>
+        </l-tooltip>
+      </l-marker>
+      <l-marker v-for="conversacion in conversaciones" :key="conversacion.id" :lat-lng="conversacion.user_dest.posicion" :icon="iconContacto">
+        <l-tooltip :options="{ permanent: true, interactive: true }">
+          <div>
+            {{conversacion.user_dest.name}}
+          </div>
+        </l-tooltip>
       </l-marker>
     </l-map>
   </div>
@@ -25,7 +33,7 @@
 
 <script>
 import { latLng, icon } from "leaflet";
-import { LMap, LTileLayer, LMarker, LPopup } from "vue2-leaflet";
+import { LMap, LTileLayer, LMarker, LTooltip } from "vue2-leaflet";
 import 'leaflet/dist/leaflet.css';
 
 export default {
@@ -34,8 +42,9 @@ export default {
     LMap,
     LTileLayer,
     LMarker,
-    LPopup
+    LTooltip
   },
+  props: { conversaciones: [Array] },
   data() {
     return {
       zoom: 13,
@@ -50,10 +59,15 @@ export default {
         zoomSnap: 0.5
       },
       icon: icon({
-        iconUrl: require('../assets/img/mapa/marker.png'),
+        iconUrl: require('../assets/img/mapa/ubicacion_propia.png'),
         iconSize: [24,36],
         iconAnchor: [12,36]
       }),
+      iconContacto: icon({
+        iconUrl: require('../assets/img/mapa/ubicacion_contacto.png'),
+        iconSize: [24,36],
+        iconAnchor: [12,36]
+      })
     };
   },
   computed: {
@@ -65,6 +79,9 @@ export default {
     }
   },
   mounted() {
+    this.$eventHub.$on("map-center", (posicion) => this.changeCenter(posicion));
+    this.$eventHub.$on("map-center-propia", () => this.centrarPropia(this.posicionPropia));
+
     var that = this;
     navigator.geolocation.getCurrentPosition(function(position) {
       that.center = [position.coords.latitude, position.coords.longitude];
@@ -78,6 +95,15 @@ export default {
     },
     centerUpdate(center) {
       this.currentCenter = center;
+    },
+    centrarPropia(posicionPropia){
+      this.changeCenter(posicionPropia);
+    },
+    changeCenter(center){
+      this.center = center;
+      setTimeout(() => {
+        this.$refs.map.mapObject.invalidateSize(true);
+      }, 200);
     }
   }
 };

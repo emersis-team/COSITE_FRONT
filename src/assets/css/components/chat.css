@@ -5,8 +5,6 @@
 }
 .chat-scroll-container {
   height: calc(100% - 102px);
-  display: grid;
-  grid-template-columns: auto auto;
 }
 .chat-scroll {
   overflow-y: scroll;

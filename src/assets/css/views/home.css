@@ -47,6 +47,10 @@
   width: 80%;
   background-color: #e5ddd5;
 }
+.home-right-with-map {
+  display: grid;
+  grid-template-columns: 50% 50%;
+}
 .home-buscar {
   width: 92%;
   height: 42px;

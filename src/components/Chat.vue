@@ -120,9 +120,6 @@
         </div>
         </div>
       </div>
-      <div>
-        <Mapa></Mapa>
-      </div>
     </div>
     <div class="chat-bottom">
       <div class="chat-adjuntar" title="Adjuntar" @click="mostrarOpciones = true">
@@ -168,7 +165,6 @@ import MensajeImagen from "@/components/MensajeImagen.vue";
 import MensajeVideo from "@/components/MensajeVideo.vue";
 import MensajeAudio from "@/components/MensajeAudio.vue";
 import Loading from "@/components/Loading.vue";
-import Mapa from "@/components/Mapa.vue";
 
 export default {
   name: "Chat",
@@ -179,8 +175,7 @@ export default {
     MensajeVideo,
     MensajeAudio,
     MensajePosicion,
-    Loading,
-    Mapa
+    Loading
   },
   data() {
     return {
@@ -215,7 +210,6 @@ export default {
         }
       }
     ];
-    console.log("jasd")
     // this.$refs.chatScroll.addEventListener("touchmove", this.onScroll);
   },
   created() {
