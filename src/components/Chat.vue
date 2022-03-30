@@ -196,21 +196,9 @@ export default {
     this.mostrarLoading = true;
     this.userId = localStorage.getItem("$userId");
     this.mensajes = [];
-    // this.getChat();
-    this.userId = 1;
+    this.getChat();
     this.mostrarLoading = false;
-    this.mensajes = [
-      {
-        id: 1,
-        sender_id: 2,
-        created_at: "2022-03-21T18:00:00",
-        message_type: '1234567891 TextMessage',
-        message: {
-          text: "hola"
-        }
-      }
-    ];
-    // this.$refs.chatScroll.addEventListener("touchmove", this.onScroll);
+    this.$refs.chatScroll.addEventListener("touchmove", this.onScroll);
   },
   created() {
     this.$eventHub.$on("chat-get", id => this.onGetChat(id));
@@ -270,11 +258,10 @@ export default {
       }
     },
     onGetChat(id) {
-      // if (id != null) {
-      //   this.mostrarLoading = true;
-      // }
-      // this.getChat(id);
-      console.log(id);
+      if (id != null) {
+        this.mostrarLoading = true;
+      }
+      this.getChat(id);
       this.$forceUpdate();
     },
     getChat(id) {

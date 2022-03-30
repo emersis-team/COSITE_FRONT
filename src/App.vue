@@ -17,18 +17,14 @@ export default {
   },
   components: { Snackbar },
   created() {
-    // Vue.prototype.$localurl = "https://emersis.casya.com.ar";
-    // Vue.prototype.$localurl = "http://chat-ea-web-sockets-back.casya.com.ar";
-    // Vue.prototype.$localurl = "http://127.0.0.1:8000";
-    // Vue.prototype.$localurl = "http://localhost/chat-ea-web-websockets-OAUTH-client-BACK/public";
-    Vue.prototype.$localurl = "http://23.237.173.86:8081/chat-ea-web-websockets-OAUTH-client-BACK/public";
-    // Vue.prototype.$localurl = "http://localhost/chat-ea-web-back/public";
+    Vue.prototype.$localurl = "http://38.109.228.250:8081/COSITE_BACK/public";
+    // Vue.prototype.$localurl = "http://localhost/COSITE_BACK/public";
     
     this.$axios.defaults.headers.common["Authorization"] =
       "Bearer " + localStorage.getItem("$token");
-    // if (localStorage.getItem("$token") == null) {
-    //   this.$router.push("/login");
-    // }
+    if (localStorage.getItem("$token") == null) {
+      this.$router.push("/login");
+    }
 
     window.addEventListener("beforeinstallprompt", e => {
       e.preventDefault();

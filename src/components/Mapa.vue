@@ -20,7 +20,7 @@
           </div>
         </l-tooltip>
       </l-marker>
-      <l-marker v-for="conversacion in conversaciones" :key="conversacion.id" :lat-lng="conversacion.user_dest.posicion" :icon="iconContacto">
+      <l-marker v-for="(conversacion, index) in conversacionesFiltradas" :key="index" :lat-lng="getPosicion(conversacion.user_dest.last_position)" :icon="iconContacto">
         <l-tooltip :options="{ permanent: true, interactive: true }">
           <div>
             {{conversacion.user_dest.name}}
@@ -47,6 +47,7 @@ export default {
   props: { conversaciones: [Array] },
   data() {
     return {
+      conversacionesFiltradas: [],
       zoom: 13,
       center: latLng(47.41322, -1.219482),
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -78,9 +79,16 @@ export default {
       return [this.iconSize / 2, this.iconSize * 1.15];
     }
   },
+  watch: {
+    conversaciones: function(newVal) { // watch it
+      this.conversacionesFiltradas = newVal.filter(c => c.user_dest.last_position != null);
+    }
+  },
   mounted() {
     this.$eventHub.$on("map-center", (posicion) => this.changeCenter(posicion));
     this.$eventHub.$on("map-center-propia", () => this.centrarPropia(this.posicionPropia));
+
+    this.conversacionesFiltradas = this.conversaciones.filter(c => c.user_dest.last_position != null);
 
     var that = this;
     navigator.geolocation.getCurrentPosition(function(position) {
@@ -103,7 +111,14 @@ export default {
       this.center = center;
       setTimeout(() => {
         this.$refs.map.mapObject.invalidateSize(true);
-      }, 200);
+      }, 500);
+    },
+    getPosicion(posicion){
+      if(posicion != null){
+        return [parseFloat(posicion.lat), parseFloat(posicion.lon)];
+      }else{
+        return null;
+      }
     }
   }
 };

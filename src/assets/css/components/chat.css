@@ -1,7 +1,8 @@
 .chat {
-  height: 100%;
+  height: 95vh;
   box-sizing: border-box;
   position: relative;
+  overflow-y: auto;
 }
 .chat-scroll-container {
   height: calc(100% - 102px);

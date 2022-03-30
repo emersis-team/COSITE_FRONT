@@ -66,37 +66,8 @@ export default {
     this.$eventHub.$on("loged", () => this.reportarUbicacion());
   },
   mounted() {
-    // this.getConversaciones();
-    // this.conectarSocket();
-    this.conversaciones = [
-      {
-        id: 1,
-        ammount_no_read: 1,
-        user_dest: {
-          name: "Javi",
-          email: "javi@email.com",
-          posicion: [-34.5326425, -58.7070437]
-        }
-      },
-      {
-        id: 2,
-        ammount_no_read: 0,
-        user_dest: {
-          name: "Paul",
-          email: "paul@email.com",
-          posicion: [-34.5395425, -58.8031437]
-        }
-      },
-      {
-        id: 3,
-        ammount_no_read: 0,
-        user_dest: {
-          name: "Vale",
-          email: "vale@email.com",
-          posicion: [-34.5123425, -58.7123437]
-        }
-      }
-    ];
+    this.getConversaciones();
+    this.conectarSocket();
     this.conversacionesFiltradas = this.conversaciones;
     this.reportarUbicacion();
   },
@@ -111,7 +82,7 @@ export default {
           window.Echo = new Echo({
             broadcaster: "pusher",
             key: "ASDASD2121",
-            wsHost: "23.237.173.86",
+            wsHost: "38.109.228.250",
             wsPort: 6001,
           // wssPort: 6001,
             disableStats: true,
@@ -123,6 +94,11 @@ export default {
             console.log("Recibo mensaje por websocket");
             console.log(e);
             that.$eventHub.$emit("chat-get");
+            that.getConversaciones();
+          });
+          window.Echo.channel("user."+localStorage.getItem("$userId")).listen("NewPositionEvent", (e) => {
+            console.log("Recibo mensaje de posición");
+            console.log(e);
             that.getConversaciones();
           });
         } catch (error) {
@@ -169,7 +145,8 @@ export default {
         Vue.prototype.$conversacionElegida = conversacion;
   
         this.$eventHub.$emit("chat-get", conversacion.id);
-        this.$eventHub.$emit("map-center", conversacion.user_dest.posicion);
+
+        this.$eventHub.$emit("map-center", [parseFloat(conversacion.user_dest.last_position.lat), parseFloat(conversacion.user_dest.last_position.lon)]);
       }else{
         Vue.prototype.$conversacionElegida = null;
         this.conversacionElegida = null;
@@ -196,21 +173,24 @@ export default {
         });
     },
     reportarUbicacion(){
-      // let usuarioId = localStorage.getItem("$userId");
-      // if(usuarioId != null){
-      //   navigator.geolocation.getCurrentPosition(function(position) {
-      //     console.log("reporto ubicacion: " + position);
-      //     setTimeout(() => {
-      //       this.reportarUbicacion();
-      //     }, 3000);
-      //   });
-      // }
       var that = this;
       navigator.geolocation.getCurrentPosition(function(position) {
         console.log("reporto ubicacion: " + position);
         setTimeout(function(){
           that.reportarUbicacion();
-        }, 3000);
+        }, 60000);
+        var posicion = new FormData();
+        posicion.append("lat", position.coords.latitude);
+        posicion.append("lon", position.coords.longitude);
+        posicion.append("alt", (position.coords.altitude != null ? position.coords.altitude : 0));
+        that.$axios
+          .post(that.$localurl + "/api/v1/position/user_position", posicion)
+          .then(function(response) {
+            console.log(response);
+          })
+          .catch(function(response) {
+            console.log(response);
+          });
       });
     }
   }
